@@ -45,7 +45,7 @@ func (z *ZopfliPng) ZopfliPng() ([]byte, Error) {
 	}
 	o := z.setPramZopfliPng()
 	defer func() {
-		C.freeopts(unsafe.Pointer(&o))
+		C.freeopts(&o)
 	}()
 
 	var res unsafe.Pointer
@@ -53,14 +53,14 @@ func (z *ZopfliPng) ZopfliPng() ([]byte, Error) {
 
 	var resLen C.size_t
 
-	r := C.CZopfliPNGOptimize((*C.uchar)(unsafe.Pointer(&z.Src[0])), C.size_t(len(z.Src)), unsafe.Pointer(&o), C.int(0), (**C.uchar)(unsafe.Pointer(&res)), (*C.size_t)(unsafe.Pointer(&resLen)))
+	r := C.CZopfliPNGOptimize((*C.uchar)(unsafe.Pointer(&z.Src[0])), C.size_t(len(z.Src)), &o, C.int(0), (**C.uchar)(unsafe.Pointer(&res)), (*C.size_t)(unsafe.Pointer(&resLen)))
 	return C.GoBytes(res, C.int(resLen)), errorCode(r).sError()
 
 }
 
 func (z *ZopfliPng) setPramZopfliPng() (o C.struct_CZopfliPNGOptions) {
 	o = C.struct_CZopfliPNGOptions{}
-	C.CZopfliPNGSetDefaults(unsafe.Pointer(&o))
+	C.CZopfliPNGSetDefaults(&o)
 
 	o.lossy_8bit = boolToCint(z.Opt.Lossy8bit)
 
